@@ -19,6 +19,8 @@
   --clr-text-muted: #6b6b6b;
   --clr-border: #2a2a2a;
   --clr-border-hover: #3a3a3a;
+  --clr-danger: #e91e63;
+  --clr-bg-gradient: var(--clr-bg-gradient);
 
   /* Tipografía */
   --ff-heading: 'Outfit', sans-serif;
@@ -61,7 +63,9 @@
 }
 
 /* --- RESET & BASE --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -206,19 +210,17 @@ button {
   align-items: center;
   justify-content: center;
   min-height: 90vh;
-  background: url('assets/img/hero-bg.png') center/cover no-repeat;
+  background: url('https://images.unsplash.com/photo-1556905055-8f358a7a47b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
   position: relative;
 }
 
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 10, 10, 0.7) 0%,
-    rgba(10, 10, 10, 0.5) 50%,
-    rgba(10, 10, 10, 0.9) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(10, 10, 10, 0.7) 0%,
+      rgba(10, 10, 10, 0.5) 50%,
+      rgba(10, 10, 10, 0.9) 100%);
 }
 
 .hero__content {
@@ -316,77 +318,95 @@ button {
   color: var(--clr-text-muted);
 }
 
-/* --- MANIFIESTO --- */
-.manifesto {
+/* --- MANIFIESTO DE MARCA --- */
+.brand-manifesto {
   display: flex;
   justify-content: center;
   padding: var(--sp-section) var(--sp-lg);
   background: var(--clr-bg-primary);
+  /* Negro profundo */
+  position: relative;
+  overflow: hidden;
 }
 
-.manifesto__container {
-  max-width: 720px;
+.brand-manifesto__container {
+  display: flex;
+  flex-direction: row;
+  max-width: var(--max-width);
+  width: 100%;
+  gap: var(--sp-xl);
+  align-items: stretch;
+  background: var(--clr-bg-card);
+  padding: var(--sp-xl);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  transition: box-shadow var(--tr-slow), border-color var(--tr-slow);
+}
+
+.brand-manifesto__container:hover {
+  box-shadow: var(--shadow-glow);
+  border-color: var(--clr-accent);
+}
+
+.brand-manifesto__left {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: var(--sp-md);
+  justify-content: space-between;
+  border-right: 1px solid var(--clr-border);
+  padding-right: var(--sp-xl);
 }
 
-.manifesto__eyebrow {
-  font-size: var(--fs-xs);
+.brand-manifesto__vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--ff-heading);
+  font-size: var(--fs-sm);
   letter-spacing: 4px;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
-  color: var(--clr-accent);
-  margin-bottom: var(--sp-md);
 }
 
-.manifesto__title {
+.brand-manifesto__line {
+  width: 2px;
+  flex-grow: 1;
+  background: linear-gradient(to bottom, var(--clr-accent), transparent);
+}
+
+.brand-manifesto__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-md);
+  flex: 1;
+}
+
+.brand-manifesto__title {
   font-family: var(--ff-heading);
   font-size: var(--fs-2xl);
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: var(--sp-lg);
+  font-weight: 900;
+  color: var(--clr-text-secondary);
+  /* Gris claro */
+  line-height: 1.1;
+  letter-spacing: -1px;
 }
 
-.manifesto__title--accent {
+.brand-manifesto__highlight {
   color: var(--clr-accent);
-  font-style: italic;
+  /* Naranja neón */
 }
 
-.manifesto__divider {
-  width: 60px;
-  height: 3px;
-  background: var(--clr-accent);
-  margin-bottom: var(--sp-lg);
-  border-radius: 2px;
-}
-
-.manifesto__text {
+.brand-manifesto__text {
   font-size: var(--fs-md);
   color: var(--clr-text-secondary);
   line-height: 1.8;
-  margin-bottom: var(--sp-md);
+  max-width: 700px;
 }
 
-.manifesto__signature {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-sm);
-  margin-top: var(--sp-lg);
-}
-
-.manifesto__signature-line {
-  width: 40px;
-  height: 1px;
-  background: var(--clr-text-muted);
-}
-
-.manifesto__signature-text {
-  font-size: var(--fs-sm);
-  font-style: italic;
-  color: var(--clr-text-muted);
-  letter-spacing: 1px;
+.brand-manifesto__text strong {
+  color: var(--clr-text-primary);
+  font-weight: 700;
 }
 
 /* --- PRODUCTOS --- */
@@ -482,7 +502,7 @@ button {
 }
 
 .product-card__badge--hot {
-  background: #e91e63;
+  background: var(--clr-danger);
 }
 
 .product-card__info {
@@ -548,7 +568,7 @@ button {
   display: flex;
   justify-content: center;
   padding: var(--sp-section) var(--sp-lg);
-  background: linear-gradient(135deg, var(--clr-bg-primary) 0%, #1a0f0a 100%);
+  background: linear-gradient(135deg, var(--clr-bg-primary) 0%, var(--clr-bg-gradient) 100%);
   border-top: 1px solid var(--clr-border);
   border-bottom: 1px solid var(--clr-border);
 }
@@ -788,9 +808,11 @@ button {
 .cart-sidebar__items::-webkit-scrollbar {
   width: 6px;
 }
+
 .cart-sidebar__items::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .cart-sidebar__items::-webkit-scrollbar-thumb {
   background: var(--clr-border);
   border-radius: var(--radius-sm);
@@ -849,7 +871,8 @@ button {
 }
 
 .cart-item__remove:hover {
-  color: #e91e63; /* Rojo alerta para eliminar */
+  color: var(--clr-danger);
+  /* Rojo alerta para eliminar */
 }
 
 .cart-sidebar__footer {
@@ -912,7 +935,8 @@ button {
   }
 
   .navbar__links {
-    display: none; /* Hamburger menu via JS en el futuro */
+    display: none;
+    /* Hamburger menu via JS en el futuro */
   }
 
   .hero {
@@ -965,6 +989,36 @@ button {
     font-size: var(--fs-xl);
   }
 
+  .brand-manifesto__container {
+    flex-direction: column;
+    padding: var(--sp-lg);
+    gap: var(--sp-md);
+  }
+
+  .brand-manifesto__left {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--clr-border);
+    padding-right: 0;
+    padding-bottom: var(--sp-md);
+    width: 100%;
+  }
+
+  .brand-manifesto__vertical-text {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+
+  .brand-manifesto__line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, var(--clr-accent), transparent);
+  }
+
+  .brand-manifesto__title {
+    font-size: var(--fs-xl);
+  }
+
   .cta-banner__title {
     font-size: var(--fs-xl);
   }
@@ -973,3 +1027,4 @@ button {
     flex: 1 1 100%;
   }
 }
+
