@@ -242,3 +242,25 @@ contenedorFavoritos.addEventListener("click", (e) => {
     toggleFavorito(idProducto);
   }
 });
+
+/* ---------------------------------------------------------------
+   FASE 4: BÚSQUEDA Y FILTRO DINÁMICO
+   Cumple: addEventListener, condicionales, manipulación de arreglos
+--------------------------------------------------------------- */
+
+buscador.addEventListener("input", (e) => {
+  // Guardamos el término en minúsculas y sin espacios en blanco extras
+  terminoBusqueda = e.target.value.toLowerCase().trim();
+  
+  // Filtramos el arreglo base de productos
+  const productosFiltrados = productos.filter((producto) => {
+    // Buscamos coincidencias en nombre o categoría
+    const coincideNombre = producto.nombre.toLowerCase().includes(terminoBusqueda);
+    const coincideCategoria = producto.categoria.toLowerCase().includes(terminoBusqueda);
+    
+    return coincideNombre || coincideCategoria;
+  });
+  
+  // Volvemos a pintar el DOM solo con los productos que pasaron el filtro
+  renderizarCatalogo(productosFiltrados);
+});
