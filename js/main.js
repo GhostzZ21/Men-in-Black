@@ -264,3 +264,112 @@ buscador.addEventListener("input", (e) => {
   // Volvemos a pintar el DOM solo con los productos que pasaron el filtro
   renderizarCatalogo(productosFiltrados);
 });
+
+/* ---------------------------------------------------------------
+   FASE 5: CARRITO DE COMPRAS (INTEGRACIÓN FINAL)
+   Cumple: Interacción compleja, manipulación de arreglos, DOM
+--------------------------------------------------------------- */
+
+// 1. Event Delegation para agregar al carrito (catálogo)
+contenedorProductos.addEventListener("click", (e) => {
+  if (e.target.classList.contains("product-card__btn")) {
+    const idProducto = parseInt(e.target.getAttribute("data-id"));
+    agregarAlCarrito(idProducto);
+    
+    // Opcional: Feedback visual o abrir el sidebar automáticamente
+    window.location.hash = "#cart-sidebar";
+  }
+});
+
+// 2. Lógica para agregar al carrito
+const agregarAlCarrito = (id) => {
+  const productoBase = productos.find(prod => prod.id === id);
+  if (!productoBase) return;
+
+  const existeEnCarrito = carrito.find(item => item.id === id);
+  
+  if (existeEnCarrito) {
+    existeEnCarrito.cantidad++;
+  } else {
+    // Agregamos una propiedad extra 'cantidad' al objeto clonado
+    carrito.push({ ...productoBase, cantidad: 1 });
+  }
+  
+  renderizarCarrito();
+};
+
+// 3. Lógica para eliminar del carrito
+const eliminarDelCarrito = (id) => {
+  carrito = carrito.filter(item => item.id !== id);
+  renderizarCarrito();
+};
+
+// 4. Renderizado completo del carrito
+const renderizarCarrito = () => {
+  // Limpiar DOM de los items del carrito
+  cartSidebarItems.innerHTML = "";
+  
+  let subtotal = 0;
+  let cantidadTotal = 0;
+
+  // Renderizar cada item guardado
+  carrito.forEach(item => {
+    subtotal += item.precio * item.cantidad;
+    cantidadTotal += item.cantidad;
+
+    const article = document.createElement("article");
+    article.classList.add("cart-item");
+    
+    article.innerHTML = `
+      <img src="${item.imagen}" alt="${item.nombre}" class="cart-item__img">
+      <div class="cart-item__info">
+        <h3 class="cart-item__name">${item.nombre}</h3>
+        <span class="cart-item__qty">Cant: ${item.cantidad}</span>
+        <span class="cart-item__price">${CONFIG.simbolo}${item.precio} ${CONFIG.moneda}</span>
+      </div>
+      <button class="cart-item__remove" aria-label="Eliminar producto" type="button" data-id="${item.id}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events:none;">
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    `;
+    
+    cartSidebarItems.appendChild(article);
+  });
+
+  // Calcular impuestos y total
+  const impuestos = subtotal * CONFIG.impuesto;
+  const total = subtotal + impuestos;
+
+  // Actualizar resumen de precios dinámico
+  cartSubtotal.innerHTML = `
+    <div class="cart-sidebar__summary-row">
+      <span>Subtotal</span>
+      <span>${CONFIG.simbolo}${subtotal.toFixed(2)} ${CONFIG.moneda}</span>
+    </div>
+    <div class="cart-sidebar__summary-row">
+      <span>Impuestos (Est.)</span>
+      <span>${CONFIG.simbolo}${impuestos.toFixed(2)} ${CONFIG.moneda}</span>
+    </div>
+    <div class="cart-sidebar__summary-row cart-sidebar__summary-total">
+      <span>Total</span>
+      <span>${CONFIG.simbolo}${total.toFixed(2)} ${CONFIG.moneda}</span>
+    </div>
+  `;
+
+  // Actualizar el numerito rojo de la bolsa de compras del Navbar
+  cartCount.textContent = cantidadTotal;
+};
+
+// 5. Event Delegation para botones de eliminar en el sidebar
+cartSidebarItems.addEventListener("click", (e) => {
+  const btnRemove = e.target.closest(".cart-item__remove");
+  if (btnRemove) {
+    const idProducto = parseInt(btnRemove.getAttribute("data-id"));
+    eliminarDelCarrito(idProducto);
+  }
+});
+
+// 6. Limpieza inicial para que empiece vacío
+renderizarCarrito();
