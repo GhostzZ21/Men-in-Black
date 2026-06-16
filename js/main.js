@@ -100,7 +100,6 @@ const cartSubtotal       = document.querySelector(".cart-sidebar__summary");
 
 /* ---------------------------------------------------------------
    FASE 1 — VERIFICACIÓN DE INICIALIZACIÓN
-   (Las fases 2-5 se construirán sobre esta base)
 --------------------------------------------------------------- */
 console.log(`✅ ${CONFIG.nombreTienda} — JS cargado correctamente.`);
 console.log(`📦 Productos disponibles: ${productos.length}`);
@@ -128,12 +127,16 @@ const renderizarCatalogo = (listaProductos) => {
     tarjeta.classList.add("product-card");
     tarjeta.id = `product-${producto.id}`;
 
-    // Lógica para el badge (si tiene uno, se renderiza; si no, cadena vacía)
+    // Lógica para el badge
     let badgeHTML = "";
     if (producto.badge) {
       const badgeClass = producto.badge.toLowerCase() === "bestseller" ? "product-card__badge product-card__badge--hot" : "product-card__badge";
       badgeHTML = `<span class="${badgeClass}">${producto.badge}</span>`;
     }
+
+    // Identificar si ya es favorito para pintar el corazón
+    const esFav = favoritos.some(fav => fav.id === producto.id);
+    const corazon = esFav ? "❤️" : "🤍";
 
     // 4. Modificación dinámica de HTML (innerHTML ✅)
     tarjeta.innerHTML = `
@@ -147,8 +150,7 @@ const renderizarCatalogo = (listaProductos) => {
         <div class="product-card__footer">
           <span class="product-card__price">${CONFIG.simbolo}${producto.precio} <small class="product-card__currency">${CONFIG.moneda}</small></span>
           <div class="product-card__actions">
-            <!-- Botones temporales, la funcionalidad se añadirá en Fases 3 y 5 -->
-            <button class="product-card__btn-fav" data-id="${producto.id}" aria-label="Añadir a favoritos" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">🤍</button>
+            <button class="product-card__btn-fav" data-id="${producto.id}" aria-label="Añadir a favoritos" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">${corazon}</button>
             <button class="product-card__btn" data-id="${producto.id}" type="button">Añadir</button>
           </div>
         </div>
@@ -162,3 +164,81 @@ const renderizarCatalogo = (listaProductos) => {
 
 // 6. Ejecutar al cargar la página
 renderizarCatalogo(productos);
+
+/* ---------------------------------------------------------------
+   FASE 3: SISTEMA DE FAVORITOS
+   Cumple: addEventListener, manipulación de arreglos y DOM
+--------------------------------------------------------------- */
+
+// 1. Event Delegation en el catálogo principal
+contenedorProductos.addEventListener("click", (e) => {
+  const btnFav = e.target.closest(".product-card__btn-fav");
+  if (btnFav) {
+    const idProducto = parseInt(btnFav.getAttribute("data-id"));
+    toggleFavorito(idProducto);
+  }
+});
+
+// 2. Función para agregar/quitar (Uso de if/else y métodos de array ✅)
+const toggleFavorito = (id) => {
+  const existe = favoritos.find(prod => prod.id === id);
+  
+  if (existe) {
+    // Si ya es favorito, lo filtramos fuera
+    favoritos = favoritos.filter(prod => prod.id !== id);
+  } else {
+    // Si no, lo buscamos en el array base y lo empujamos
+    const productoBase = productos.find(prod => prod.id === id);
+    if (productoBase) favoritos.push(productoBase);
+  }
+  
+  // Refrescar vistas
+  renderizarFavoritos();
+  // Volvemos a renderizar el catálogo para que los corazones cambien de 🤍 a ❤️
+  // (Usamos la variable global de búsqueda o el array completo por ahora)
+  renderizarCatalogo(productos);
+};
+
+// 3. Renderizar la sección de favoritos dinámicamente
+const renderizarFavoritos = () => {
+  contenedorFavoritos.innerHTML = "";
+  
+  // Mostrar/ocultar sección según si hay elementos
+  if (favoritos.length === 0) {
+    seccionFavoritos.style.display = "none";
+    return;
+  }
+  
+  seccionFavoritos.style.display = "block";
+  
+  favoritos.forEach(producto => {
+    const tarjeta = document.createElement("article");
+    tarjeta.classList.add("product-card");
+    tarjeta.style.transform = "scale(0.95)"; // Un poco más pequeña para distinguir
+    tarjeta.style.border = "1px solid #ff4747"; // Borde rojo tenue para destacar que es fav
+    
+    tarjeta.innerHTML = `
+      <div class="product-card__image-wrapper">
+        <img class="product-card__image" src="${producto.imagen}" alt="${producto.nombre}" loading="lazy" width="400" height="500">
+      </div>
+      <div class="product-card__info" style="padding: 1rem;">
+        <h3 class="product-card__name" style="font-size: 1.1rem;">${producto.nombre}</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+          <span class="product-card__price">${CONFIG.simbolo}${producto.precio} <small>${CONFIG.moneda}</small></span>
+          <button class="product-card__btn-fav" data-id="${producto.id}" aria-label="Quitar de favoritos" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color: #ff4747;">❤️</button>
+        </div>
+      </div>
+    `;
+    
+    contenedorFavoritos.appendChild(tarjeta);
+  });
+};
+
+// 4. Event Delegation para quitar desde la propia sección de favoritos
+contenedorFavoritos.addEventListener("click", (e) => {
+  const btnFav = e.target.closest(".product-card__btn-fav");
+  if (btnFav) {
+    const idProducto = parseInt(btnFav.getAttribute("data-id"));
+    toggleFavorito(idProducto);
+  }
+});
