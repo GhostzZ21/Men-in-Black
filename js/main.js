@@ -104,3 +104,61 @@ const cartSubtotal       = document.querySelector(".cart-sidebar__summary");
 --------------------------------------------------------------- */
 console.log(`✅ ${CONFIG.nombreTienda} — JS cargado correctamente.`);
 console.log(`📦 Productos disponibles: ${productos.length}`);
+
+/* ---------------------------------------------------------------
+   FASE 2: RENDERIZADO DEL CATÁLOGO
+   Cumple: Manipulación del DOM, Ciclo forEach, Arrow Functions
+--------------------------------------------------------------- */
+
+// Función principal para dibujar los productos (Usa Arrow Function ✅)
+const renderizarCatalogo = (listaProductos) => {
+  // 1. Limpiar el contenedor para evitar duplicados
+  contenedorProductos.innerHTML = "";
+
+  // Si la lista está vacía (por ejemplo, al filtrar sin resultados)
+  if (listaProductos.length === 0) {
+    contenedorProductos.innerHTML = `<p class="products__empty">No se encontraron piezas en la bóveda.</p>`;
+    return;
+  }
+
+  // 2. Ciclo obligatorio (forEach ✅)
+  listaProductos.forEach((producto) => {
+    // 3. Crear el elemento contenedor (createElement ✅)
+    const tarjeta = document.createElement("article");
+    tarjeta.classList.add("product-card");
+    tarjeta.id = `product-${producto.id}`;
+
+    // Lógica para el badge (si tiene uno, se renderiza; si no, cadena vacía)
+    let badgeHTML = "";
+    if (producto.badge) {
+      const badgeClass = producto.badge.toLowerCase() === "bestseller" ? "product-card__badge product-card__badge--hot" : "product-card__badge";
+      badgeHTML = `<span class="${badgeClass}">${producto.badge}</span>`;
+    }
+
+    // 4. Modificación dinámica de HTML (innerHTML ✅)
+    tarjeta.innerHTML = `
+      <div class="product-card__image-wrapper">
+        <img class="product-card__image" src="${producto.imagen}" alt="${producto.nombre}" loading="lazy" width="400" height="500">
+        ${badgeHTML}
+      </div>
+      <div class="product-card__info">
+        <h3 class="product-card__name">${producto.nombre}</h3>
+        <p class="product-card__desc">${producto.descripcion}</p>
+        <div class="product-card__footer">
+          <span class="product-card__price">${CONFIG.simbolo}${producto.precio} <small class="product-card__currency">${CONFIG.moneda}</small></span>
+          <div class="product-card__actions">
+            <!-- Botones temporales, la funcionalidad se añadirá en Fases 3 y 5 -->
+            <button class="product-card__btn-fav" data-id="${producto.id}" aria-label="Añadir a favoritos" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">🤍</button>
+            <button class="product-card__btn" data-id="${producto.id}" type="button">Añadir</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // 5. Insertar en el DOM (appendChild ✅)
+    contenedorProductos.appendChild(tarjeta);
+  });
+};
+
+// 6. Ejecutar al cargar la página
+renderizarCatalogo(productos);
